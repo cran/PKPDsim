@@ -1,8 +1,8 @@
 Package: PKPDsim
 Type: Package
 Title: Tools for Performing Pharmacokinetic-Pharmacodynamic Simulations
-Version: 1.1.0
-Date: 2022-01-04
+Version: 1.1.1
+Date: 2022-03-31
 Authors@R: c(
         person("Ron", "Keizer", email = "ron@insight-rx.com", role = c("aut", "cre")),
         person("Jasmine", "Hughes", email = "jasmine@insight-rx.com", role = "aut"),
@@ -24,7 +24,7 @@ RoxygenNote: 7.1.2
 Config/testthat/edition: 3
 Encoding: UTF-8
 NeedsCompilation: yes
-Packaged: 2022-01-18 18:38:22 UTC; ronkeizer
+Packaged: 2022-03-31 22:37:01 UTC; ron@insight-rx.com
 Author: Ron Keizer [aut, cre],
   Jasmine Hughes [aut],
   Dominic Tong [aut],
@@ -32,4 +32,4 @@ Author: Ron Keizer [aut, cre],
   InsightRX [cph, fnd]
 Maintainer: Ron Keizer <ron@insight-rx.com>
 Repository: CRAN
-Date/Publication: 2022-01-19 08:22:41 UTC
+Date/Publication: 2022-04-01 08:10:02 UTC

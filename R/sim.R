@@ -128,7 +128,19 @@ sim <- function (ode = NULL,
     t_ss <- 0
     regimen_orig <- regimen
   }
-  if(!is.null(attr(ode, "lagtime")) && attr(ode, "lagtime") != "undefined" && attr(ode, "lagtime") != "NULL") {
+  ## Add duplicate "doses" to regimen, e.g. for double-absorption compartments
+  dose_dupl <- attr(ode, "dose")$duplicate
+  if(!is.null(dose_dupl)) {
+    if(is.null(regimen$cmt)) {
+      regimen$cmt <- attr(ode, "dose")$cmt
+    }
+    regimen_dupl <- regimen
+    for(i in 1:length(dose_dupl)) {
+      regimen_dupl$cmt <- dose_dupl[i]
+      regimen <- merge_regimen(list(regimen, regimen_dupl))
+    }
+  }
+  if(!is.null(attr(ode, "lagtime")) && attr(ode, "lagtime")[1] != "undefined" && attr(ode, "lagtime")[1] != "NULL") {
     if(is.null(lagtime)) { # only override from metadata if not specified by user
       lagtime <- attr(ode, "lagtime")
     }
@@ -167,10 +179,10 @@ sim <- function (ode = NULL,
       }
     }
     if(is.null(analytical)) {
-      if("function" %in% class(ode) && is.null(attr(ode, "cpp")) || attr(ode, "cpp") == FALSE) {
+      if(inherits(ode, "function") && is.null(attr(ode, "cpp")) || attr(ode, "cpp") == FALSE) {
         stop("Sorry. Non-C++ functions are deprecated as input for ODE.")
       } else {
-        if("function" %in% class(ode)) {
+        if(inherits(ode, "function")) {
           size <- attr(ode,  "size")
         } else {
           size <- attr(get(ode),  "size")
@@ -195,7 +207,7 @@ sim <- function (ode = NULL,
     #    stop("Please specify possible observation times for time-to-event analysis as 't_tte' argument!")
     #  }
     if(is.null(analytical)) {
-      if("function" %in% class(ode) && is.null(attr(ode, "cpp")) || attr(ode, "cpp") == FALSE) {
+      if(inherits(ode, "function") && is.null(attr(ode, "cpp")) || attr(ode, "cpp") == FALSE) {
         stop("Sorry. Non-C++ functions are deprecated.")
       }
     }
@@ -203,12 +215,12 @@ sim <- function (ode = NULL,
       if(!is.null(covariates_table)) {
         stop("Both `covariates` and `covariates_table` are specified!")
       }
-      if(class(covariates) != "list") {
+      if(!inherits(covariates, "list")) {
         stop("Covariates need to be specified as a list!")
       } else {
         for(key in names(covariates)) {
-          if(!"covariate" %in% class(covariates[[key]])) {
-            if(class(covariates[[key]]) == "numeric") { # auto-conversion for convenience
+          if(! inherits(covariates[[key]], "covariate")) {
+            if(inherits(covariates[[key]], "numeric")) { # auto-conversion for convenience
               covariates[[key]] <- new_covariate(covariates[[key]])
             }
           }
@@ -216,10 +228,10 @@ sim <- function (ode = NULL,
       }
     }
     if(!is.null(parameters_table)) {
-      if(class(parameters_table) %in% c("data.frame", "data.table")) {
+      if(inherits(parameters_table, "data.frame") || inherits(parameters_table, "data.table")) {
         parameters_table <- table_to_list(parameters_table)
       }
-      if(class(parameters_table) != "list") {
+      if(!inherits(parameters_table, "list")) {
         stop("Sorry, covariates for population seem to be misspecified. See manual for more information.")
       }
       if(length(parameters_table) != n_ind) {
@@ -228,10 +240,10 @@ sim <- function (ode = NULL,
       p <- parameters_table[[1]]
     }
     if(!is.null(covariates_table)) {
-      if(class(covariates_table) %in% c("data.frame", "data.table")) {
+      if(inherits(covariates_table, "data.frame") || inherits(covariates_table, "data.table")) {
         covariates_table <- covariates_table_to_list(covariates_table, covariates_implementation)
       }
-      if(class(covariates_table) != "list") {
+      if(! inherits(covariates_table, "list")) {
         stop("Sorry, covariates for population seem to be misspecified. See manual for more information.")
       }
       if(length(covariates_table) != n_ind) {
@@ -270,7 +282,7 @@ sim <- function (ode = NULL,
         }
       }
     }
-    if(! any(c("regimen", "regimen_multiple") %in% class(regimen))) {
+    if(! (inherits(regimen, "regimen") || inherits(regimen, "regimen_multiple"))) {
       stop("Please create a regimen using the new_regimen() function!")
     }
     if(verbose) {
@@ -280,10 +292,10 @@ sim <- function (ode = NULL,
     size <- attr(ode, "size")
   }
   if (!is.null(omega)) {
-    if(class(omega) == "matrix") {
+    if(inherits(omega, "matrix")) {
       omega_mat <- omega
     }
-    if(class(omega) %in% c("numeric", "integer")) {
+    if(inherits(omega, "numeric")) {
       omega_mat <- triangle_to_full(omega)
     }
     etas <- mvrnorm2(n = n_ind, mu=rep(0, nrow(omega_mat)), Sigma=omega_mat, sequence=sequence)
@@ -291,7 +303,7 @@ sim <- function (ode = NULL,
       etas <- t(matrix(etas))
     }
   }
-  if("regimen_multiple" %in% class(regimen)) {
+  if(inherits(regimen, "regimen_multiple")) {
     n_ind <- length(regimen)
   } else {
     if(is.null(t_obs)) { # find reasonable default to output
@@ -343,7 +355,7 @@ sim <- function (ode = NULL,
     A_init <- rep(0, size)
   }
   events <- c() # only for tte
-  if("regimen_multiple" %in% class(regimen) && !is.null(covariates_table)) {
+  if(inherits(regimen, "regimen_multiple") && !is.null(covariates_table)) {
     stop("Sorry, can't simulate multiple regimens for a population in single call to PKPDsim. Use a loop instead.")
   }
 
@@ -390,7 +402,7 @@ sim <- function (ode = NULL,
         p_i[[mixture_obj$parameter]] <- mixture_obj$values[mixture_group[i]]
       }
     }
-    if("regimen_multiple" %in% class(regimen)) {
+    if(inherits(regimen, "regimen_multiple")) {
       if(is.null(t_obs)) { # find reasonable default to output
         t_obs <- get_t_obs_from_regimen(
           regimen[[i]], obs_step_size, t_max,
@@ -400,7 +412,7 @@ sim <- function (ode = NULL,
         obs_type <- rep(1, length(t_obs))
       }
       design_i <- create_event_table(regimen[[i]], t_max, t_obs, t_tte, t_init = t_init, p_i, covariates_tmp)
-      if("regimen_multiple" %in% class(regimen)) {
+      if(inherits(regimen, "regimen_multiple")) {
         p_i$dose_times <- regimen[[i]]$dose_times
         p_i$dose_amts <- regimen[[i]]$dose_amts
       }
@@ -559,8 +571,10 @@ sim <- function (ode = NULL,
   grid <- expand.grid(paste(t_obs, obs_type, sep="_"), unique(comb$id), unique(comb$comp))
   colnames(grid) <- c("t_obs_type", "id", "comp")
   comb$t_obs_type <- paste(comb$t, comb$obs_type, sep = "_")
-  comb <- merge(grid, comb, all=FALSE)[, c("id", "t_obs_type", "t", "comp", "y", "obs_type", all_names)]
-  comb <- comb[order(comb$id, comb$comp, comb$t, comb$obs_type, decreasing=FALSE), -2]
+  comb$rownr <- 1:nrow(comb) # keep row-ordering during merge
+  comb <- merge(grid, comb, all=FALSE)[, c("id", "t_obs_type", "t", "comp", "y", "obs_type", "rownr", all_names)]
+  rm_cols <- which(colnames(comb) %in% c("t_obs_type", "rownr"))
+  comb <- comb[order(comb$id, comb$comp, comb$t, comb$obs_type, comb$rownr, decreasing=FALSE), -rm_cols]
   if(!is.null(regimen_orig$ss_regimen)) {
     t_ss <- utils::tail(regimen_orig$ss_regimen$dose_times,1) + regimen_orig$ss_regimen$interval
     comb$t <- as.num(comb$t) - t_ss
