@@ -24,6 +24,7 @@ new_ode_model(
   declare_variables = NULL,
   iiv = NULL,
   iov = NULL,
+  development = NULL,
   omega_matrix = NULL,
   ruv = NULL,
   ltbs = NULL,
@@ -43,7 +44,8 @@ new_ode_model(
   nonmem = NULL,
   comments = NULL,
   version = "0.1.0",
-  quiet = ""
+  quiet = "",
+  definition = NULL
 )
 }
 \arguments{
@@ -84,6 +86,8 @@ new_ode_model(
 \item{iiv}{inter-individual variability, can optionally be added to library}
 
 \item{iov}{inter-occasion variability, can optionally be added to library}
+
+\item{development}{Information about the model development population, can optionally be added to library}
 
 \item{omega_matrix}{variance-covariance matrix for inter-individual variability, can optionally be added to library}
 
@@ -126,6 +130,10 @@ new_ode_model(
 \item{quiet}{passed on to `system2` as setting for stderr and stdout; how to
 output cmd line output. Default (`""`) is R console, NULL or FALSE discards.
 TRUE captures the output and saves as a file.}
+
+\item{definition}{optional, filename for the JSON file the full definition
+for the model. The definition file will be stored as `definition.json` in the
+resulting package.}
 }
 \value{
 If package name is NULL, returns the model object. Otherwise has no

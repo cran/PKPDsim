@@ -33,7 +33,7 @@
 #' @param duplicate_t_obs allow duplicate t_obs in output? E.g. for optimal design calculations when t_obs = c(0,1,2,2,3). Default is FALSE.
 #' @param extra_t_obs include extra t_obs in output for bolus doses? This is only activated when `t_obs` is not specified manually. E.g. for a bolus dose at t=24, if FALSE, PKPDsim will output only the trough, so for bolus doses you might want to switch this setting to TRUE. When set to "auto" (default), it will be TRUE by default, but will switch to FALSE whenever `t_obs` is specified manually.
 #' @param rtte should repeated events be allowed (FALSE by default)
-#' @param output_include list specyfing what to include in output table, with keys `parameters` and `covariates`. Both are FALSE by default.
+#' @param output_include list specifying what to include in output table, with keys `parameters` and `covariates`. Both are FALSE by default.
 #' @param checks perform input checks? Default is TRUE. For calculations where sim_ode is invoked many times (e.g. population estimation, optimal design) it makes sense to switch this to FALSE (after confirming the input is correct) to improve speed.
 #' @param return_event_table return the event table for the simulation only, does not run the actual simulation. Useful for iterative use of sim().
 #' @param return_design returns the design (event table and several other details) for the simulation, does not run the actual simulation. Useful for iterative functions like estimation in combination with `sim_core()`, e.g. for estimation and optimal design.
@@ -155,6 +155,9 @@ sim <- function (ode = NULL,
   }
   t_obs_orig <- t_obs + t_init
   if(checks) {
+    if(!is.null(parameters) && !is.null(parameters_table)) {
+      stop("Both `parameters` and `parameters_table` are specified!")
+    }
     ## test_pointer looks if the model is in memory, will throw error if needs to be recompiled.
     test_pointer(ode)
     if(is.null(ode) && is.null(analytical)) {
@@ -179,7 +182,7 @@ sim <- function (ode = NULL,
       }
     }
     if(is.null(analytical)) {
-      if(inherits(ode, "function") && is.null(attr(ode, "cpp")) || attr(ode, "cpp") == FALSE) {
+      if(inherits(ode, "function") && !isTRUE(attr(ode, "cpp"))) {
         stop("Sorry. Non-C++ functions are deprecated as input for ODE.")
       } else {
         if(inherits(ode, "function")) {
@@ -190,9 +193,6 @@ sim <- function (ode = NULL,
       }
     } else {
       size <- attr(analytical, "size")
-    }
-    if(!is.null(parameters) && !is.null(parameters_table)) {
-      stop("Both `parameters` and `parameters_table` are specified!")
     }
     if(is.null(ode) && is.null(analytical)) {
       stop("Please specify at least the required arguments 'ode' or 'analytical' for simulations.")
@@ -295,7 +295,7 @@ sim <- function (ode = NULL,
     if(inherits(omega, "matrix")) {
       omega_mat <- omega
     }
-    if(inherits(omega, "numeric")) {
+    if(mode(omega) == "numeric") {
       omega_mat <- triangle_to_full(omega)
     }
     etas <- mvrnorm2(n = n_ind, mu=rep(0, nrow(omega_mat)), Sigma=omega_mat, sequence=sequence)

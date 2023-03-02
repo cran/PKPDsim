@@ -38,7 +38,7 @@ cleanup_code <- function(code) {
 #'
 #' @param files vector of files
 #' @param find find what string, vector of character
-#' @param replacement replace with what, vector of character, should be equal in lenght to `find`
+#' @param replacement replace with what, vector of character, should be equal in length to `find`
 #' @export
 #' @return Function does not return a value but edits files on disk
 search_replace_in_file <- function(files = c(), find = NULL, replacement = NULL) {
@@ -76,26 +76,34 @@ add_quotes <- function(x, quote = "double") {
 #'
 #' @param x list to be printed
 #' @param wrapper wrap in list object?
-#' @param quote add quotes to values in list definition?
 #' @export
 #' @return Original list in R syntax
-print_list <- function(x, wrapper = TRUE, quote = FALSE) {
-  if(is.null(x)) return("")
-  if(!quote) {
-    tmp <- paste(PKPDsim::add_quotes(names(x)), "=", x[names(x)], collapse = ", ")
+print_list <- function(x, wrapper = TRUE) {
+  UseMethod("print_list")
+}
+
+#' @export
+print_list.NULL <- function(x, wrapper = TRUE) {
+  return("")
+}
+
+#' @export
+print_list.list <- function(x, wrapper = TRUE) {
+  if(length(x) == 0) return("")
+  result <- paste0(utils::capture.output(dput(x)), collapse = "")
+  if(isTRUE(wrapper)) {
+    return(result)
   } else {
-    tmp <- paste(PKPDsim::add_quotes(names(x)), "=", add_quotes(x[names(x)]), collapse = ", ")
-  }
-  if(wrapper) {
-    return(paste0("list (", tmp, ")"))
-  } else {
-    return(tmp)
+    result <- gsub("^list\\(", "", result)
+    result <- gsub("\\)$", "", result)
+    result
   }
 }
 
 #' Current time in UTC
 #'
 #' @return POSIXct object containing current time in UTC
+#' @keywords internal
 now_utc <- function() {
   as.POSIXct(as.POSIXlt(Sys.time(), tz = "UTC"))
 }

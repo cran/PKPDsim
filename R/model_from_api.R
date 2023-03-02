@@ -31,7 +31,7 @@ model_from_api <- function(url,
   if(get_definition) {
     return(def)
   }
-  if(!def$build && !install_all) {
+  if(!isTRUE(def$build) && !install_all) {
     message(paste0("- Model ", model, " not flagged for building, skipping compilation. Use `install_all=TRUE` to force build."))
   }
   if(isTRUE(def$misc$init_parameter) && !is.null(def$misc$model_type)) {
@@ -43,7 +43,7 @@ model_from_api <- function(url,
   }
   if(is.null(def$comments)) def$comments <- ""
   mod <- NULL
-  if(def$build || install_all) {
+  if(isTRUE(def$build) || install_all) {
     build <- TRUE
     package <- NULL
     if(to_package) {
@@ -73,6 +73,7 @@ model_from_api <- function(url,
         package = package,
         iiv = def$iiv,
         iov = def$iov,
+        development = def$development,
         omega_matrix = def$omega_matrix,
         ruv = def$ruv,
         ltbs = def$ltbs,
@@ -80,13 +81,14 @@ model_from_api <- function(url,
         cmt_mapping = def$cmt_mapping,
         lagtime = def$lagtime,
         default_parameters = def$parameters,
-        fixed = def$fixed,
+        fixed = get_fixed_parameters(def),
         state_init = def$state_init,
         verbose = verbose,
         nonmem = nonmem,
         int_step_size = def$simulation$int_step_size,
         comments = stringr::str_replace_all(def$comments, '\\"', ""),
         version = ifelse(!is.null(def$version), def$version, "0.1.0"),
+        definition = url,
         ...
       )
     }

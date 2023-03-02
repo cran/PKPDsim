@@ -20,6 +20,7 @@
 #' @param fixed parameters that should not have iiv added.
 #' @param iiv inter-individual variability, can optionally be added to library
 #' @param iov inter-occasion variability, can optionally be added to library
+#' @param development Information about the model development population, can optionally be added to library
 #' @param omega_matrix variance-covariance matrix for inter-individual variability, can optionally be added to library
 #' @param ruv residual variability, can optionally be added to library
 #' @param ltbs log-transform both sides. Not used in simulations, only for fitting (sets attribute `ltbs`).
@@ -41,6 +42,9 @@
 #' @param quiet passed on to `system2` as setting for stderr and stdout; how to
 #' output cmd line output. Default (`""`) is R console, NULL or FALSE discards.
 #' TRUE captures the output and saves as a file.
+#' @param definition optional, filename for the JSON file the full definition
+#' for the model. The definition file will be stored as `definition.json` in the
+#' resulting package.
 #' @export
 #' @return If package name is NULL, returns the model object. Otherwise has no
 #'   return value.
@@ -63,6 +67,7 @@ new_ode_model <- function (model = NULL,
                            declare_variables = NULL,
                            iiv = NULL,
                            iov = NULL,
+                           development = NULL,
                            omega_matrix = NULL,
                            ruv = NULL,
                            ltbs = NULL,
@@ -82,7 +87,8 @@ new_ode_model <- function (model = NULL,
                            nonmem = NULL,
                            comments = NULL,
                            version = "0.1.0",
-                           quiet = ""
+                           quiet = "",
+                           definition = NULL
                           ) {
   if (is.null(model) & is.null(code) & is.null(file) & is.null(func)) {
     stop(paste0("Either a model name (from the PKPDsim library), ODE code, an R function, or a file containing code for the ODE system have to be supplied to this function. The following models are available:\n  ", model_library()))
@@ -189,8 +195,7 @@ new_ode_model <- function (model = NULL,
 
     check_mixture_model(mixture, parameters)
 
-    if(is.null(obs$scale)) { obs$scale <- 1 }
-    if(is.null(obs$cmt))   { obs$cmt <- 1 }
+    obs <- check_obs_input(obs)
     if(is.null(dose$cmt))  { dose$cmt <- 1 }
     cov_names <- NULL
     if(!is.null(covariates)) {
@@ -217,23 +222,25 @@ new_ode_model <- function (model = NULL,
     if(!is.null(package)) { # don't compile if saving as library
       compile = FALSE
     }
-    cmp <- compile_sim_cpp(code = code,
-                           pk_code = pk_code,
-                           dose_code = dose_code,
-                           size = size,
-                           p = parameters,
-                           cpp_show_code = cpp_show_code,
-                           code_init = code_init_text,
-                           state_init = state_init,
-                           declare_variables = declare_variables,
-                           variables = variables,
-                           covariates = covariates,
-                           obs = obs,
-                           dose = dose,
-                           verbose = verbose,
-                           compile = compile,
-                           as_is = as_is,
-                           iov = iov)
+    cmp <- compile_sim_cpp(
+      code = code,
+      pk_code = pk_code,
+      dose_code = dose_code,
+      size = size,
+      p = parameters,
+      cpp_show_code = cpp_show_code,
+      code_init = code_init_text,
+      state_init = state_init,
+      declare_variables = declare_variables,
+      variables = variables,
+      covariates = covariates,
+      obs = obs,
+      dose = dose,
+      verbose = verbose,
+      compile = compile,
+      as_is = as_is,
+      iov = iov
+    )
     reqd <- parameters
     if(length(grep("cov_", reqd)) > 0) {
       reqd <- reqd[-grep("cov_", reqd)]
@@ -270,6 +277,7 @@ new_ode_model <- function (model = NULL,
       attr(sim_out, "misc") <- misc
       attr(sim_out, "cmt_mapping") <- cmt_mapping
       attr(sim_out, "iov") <- iov
+      attr(sim_out, "development") <- development
       attr(sim_out, "comments") <- paste0("\n", as.character(paste0(paste0(" - ", comments), collapse = "\n")))
       if(!is.null(int_step_size)) {
         attr(sim_out, "int_step_size") <- int_step_size
@@ -291,8 +299,29 @@ new_ode_model <- function (model = NULL,
       if(!file.exists(new_folder)) {
         dir.create(new_folder)
       }
-      file.copy(from = templ_folder, to = new_folder,
-                overwrite = TRUE, recursive = TRUE, copy.mode = FALSE)
+      file.copy(
+        from = templ_folder,
+        to = new_folder,
+        overwrite = TRUE,
+        recursive = TRUE,
+        copy.mode = FALSE
+      )
+
+      ## copy definition JSON, if model created from definition file.
+      if(!is.null(definition) && file.exists(definition)) {
+        dir.create(file.path(new_folder, "inst"))
+        copy_result <- file.copy(
+          from = definition,
+          to = file.path(new_folder, "inst", "definition.json5")
+        )
+        if(verbose) {
+          if(isTRUE(copy_result)) {
+            message("* Adding model definition to R package.")
+          } else {
+            message("* Could not add model definition to R package.")
+          }
+        }
+      }
 
       ## Write new source file
       fileConn <- file(file.path(new_folder, "src", "sim_wrapper_cpp.cpp"))
@@ -303,13 +332,14 @@ new_ode_model <- function (model = NULL,
       if(is.null(pk_code)) { pk_code <- "" }
       if(is.null(dose_code)) { dose_code <- "" }
       lagtime <- vector_to_R_code(lagtime)
-      if(is.null(obs$cmt)) { obs$cmt <- "1" }
-      if(is.null(obs$scale)) { obs$scale <- "1" }
-      if(is.null(dose$cmt)) { dose$cmt <- "1" }
       dose$bioav <- bioavailability_to_R_code(dose$bioav)
       if(is.null(size)) { size <- "1" }
       if(is.null(ltbs)) { ltbs <- FALSE }
-      if(is.null(state_init)) { state_init <- "NULL" } else { state_init <- add_quotes(state_init)}
+      if(is.null(state_init)) {
+        state_init <- "NULL"
+      } else {
+        state_init <- add_quotes(state_init)
+      }
       if(is.null(nonmem)) { nonmem <- "NULL" }
       if(is.null(int_step_size)) { int_step_size <- "NULL" }
       pars <- vector_to_R_code(reqd)
@@ -338,6 +368,7 @@ new_ode_model <- function (model = NULL,
                        "\\[LAGTIME\\]", lagtime,
                        "\\[USE_IOV\\]", as.character(use_iov),
                        "\\[IOV\\]", PKPDsim::print_list(iov, FALSE),
+                       "\\[DEVELOPMENT\\]", print_list(development, FALSE),
                        "\\[LTBS\\]", as.character(ltbs),
                        "\\[MISC\\]", paste0(deparse(misc), collapse = ""),
                        "\\[CMT_MAPPING\\]", paste0(deparse(cmt_mapping), collapse = ""),
@@ -367,7 +398,7 @@ new_ode_model <- function (model = NULL,
         default_parameters <- PKPDsim::print_list(default_parameters, FALSE)
       }
       if(is.null(units)) { units <- "''" } else {
-        units <- PKPDsim::print_list(units, TRUE, TRUE)
+        units <- PKPDsim::print_list(units, wrapper = TRUE)
       }
       search_replace_in_file(file.path(new_folder, "R", "iiv.R"), "\\[IIV\\]", iiv)
       search_replace_in_file(file.path(new_folder, "R", "iov.R"), "\\[IOV\\]", iov)
@@ -397,7 +428,7 @@ new_ode_model <- function (model = NULL,
 
       ## Compile / build / install
       if(file.exists(file.path(new_folder, "R", "RcppExports.R"))) {
-        file.remove(paste0(new_folder, "R", "RcppExports.R"))
+        file.remove(file.path(new_folder, "R", "RcppExports.R"))
       }
       if(file.exists(file.path(new_folder, "src", "RcppExports.cpp"))) {
         file.remove(file.path(new_folder, "src", "RcppExports.cpp"))
@@ -431,11 +462,9 @@ new_ode_model <- function (model = NULL,
         # Run R CMD BUILD to zip file
         args <- c("CMD", "build", normalizePath(file.path(folder, package)))
         system2(cmd, args, stdout = quiet, stderr = quiet)
-        pkg_file <- paste0(new_folder, .Platform$file.sep, package, "_", version, ".tar.gz")
-        pkg_newfile <- paste0(getwd(), .Platform$file.sep, package, "_", version, ".tar.gz")
+        pkg_file <- paste0(package, "_", version, ".tar.gz")
         if(file.exists(pkg_file)) {
-          file.copy(pkg_file, pkg_newfile)
-          message(paste0("Package built in: ", pkg_newfile))
+          message(paste0("Package built in: ", file.path(getwd(), pkg_file)))
         } else {
           message("Package not created.")
         }
