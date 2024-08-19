@@ -36,7 +36,7 @@
 #' @param lib_location install into folder (`--library` argument)
 #' @param verbose show more output
 #' @param as_is use C-code as-is, don't substitute line-endings or shift indices
-#' @param nonmem add nonmem code as attribute to model object
+#' @param nonmem add NONMEM code as attribute to model object
 #' @param comments comments for model
 #' @param version number of library
 #' @param quiet passed on to `system2` as setting for stderr and stdout; how to
@@ -207,6 +207,11 @@ new_ode_model <- function (model = NULL,
       }
     }
     variables <- declare_variables
+    if(!is.null(cov_names) && !is.null(variables)) {
+      if(length(intersect(cov_names, variables))) {
+        stop("Covariates and specified variables cannot overlap.")
+      }
+    }
     if(!is.null(cov_names)) {
       declare_variables <- c(declare_variables,
                              cov_names,
@@ -340,7 +345,7 @@ new_ode_model <- function (model = NULL,
       } else {
         state_init <- add_quotes(state_init)
       }
-      if(is.null(nonmem)) { nonmem <- "NULL" }
+      if(is.null(nonmem) || length(nonmem) == 0) { nonmem <- "NULL" }
       if(is.null(int_step_size)) { int_step_size <- "NULL" }
       pars <- vector_to_R_code(reqd)
       covs <- vector_to_R_code(cov_names)
@@ -352,9 +357,9 @@ new_ode_model <- function (model = NULL,
                        "\\[OBS_COMP\\]", obs$cmt,
                        "\\[DOSE_COMP\\]", dose$cmt,
                        "\\[OBS_SCALE\\]", obs$scale,
-                       "\\[OBS_VARIABLE\\]", deparse(obs$variable),
+                       "\\[OBS_VARIABLE\\]", paste0(deparse(obs$variable), collapse = ""),
                        "\\[DOSE_BIOAV\\]", dose$bioav,
-                       "\\[DOSE_DUPLICATE\\]", deparse(dose$duplicate),
+                       "\\[DOSE_DUPLICATE\\]", paste0(deparse(dose$duplicate), collapse = ""),
                        "\\[CODE\\]", code,
                        "\\[PK_CODE\\]", pk_code,
                        "\\[DOSE_CODE\\]", dose_code,
@@ -366,6 +371,7 @@ new_ode_model <- function (model = NULL,
                        "\\[COVS\\]", covs,
                        "\\[FIXED\\]", fixed,
                        "\\[LAGTIME\\]", lagtime,
+                       "\\[DURATION_SCALE\\]", deparse(dose$duration_scale),
                        "\\[USE_IOV\\]", as.character(use_iov),
                        "\\[IOV\\]", PKPDsim::print_list(iov, FALSE),
                        "\\[DEVELOPMENT\\]", print_list(development, FALSE),
@@ -453,14 +459,14 @@ new_ode_model <- function (model = NULL,
           "--with-keep.source",
           "--pkglock",
           "--no-staged-install",
-          normalizePath(file.path(folder, package))
+          shQuote(normalizePath(file.path(folder, package)))
         )
 
         system2(cmd, args, stdout = quiet, stderr = quiet)
 
       } else {
         # Run R CMD BUILD to zip file
-        args <- c("CMD", "build", normalizePath(file.path(folder, package)))
+        args <- c("CMD", "build", shQuote(normalizePath(file.path(folder, package))))
         system2(cmd, args, stdout = quiet, stderr = quiet)
         pkg_file <- paste0(package, "_", version, ".tar.gz")
         if(file.exists(pkg_file)) {

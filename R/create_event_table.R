@@ -46,6 +46,13 @@ create_event_table <- function(
 
   } else if (!is.null(model) && !is.null(attr(model, "cmt_mapping"))) {
     cmt_mapping <- attr(model, "cmt_mapping")
+    if (!all(regimen$type %in% names(cmt_mapping))) {
+      stop(
+        "Unrecognized regimen type. Define '",
+        setdiff(regimen$type, names(cmt_mapping)),
+        "' in model md field `cmt_mapping`"
+      )
+    }
     regimen$dose_cmt <- vapply(regimen$type, function(x) cmt_mapping[[x]], FUN.VALUE = numeric(1), USE.NAMES = FALSE)
 
   } else {
@@ -96,7 +103,7 @@ create_event_table <- function(
     regimen$evid <- c(rep(1, length(regimen$dose_times)), rep(2, length(covt$time)))
     regimen$dose_times <- c(regimen$dose_times, covt$time)
     regimen$dose_amts <- c(regimen$dose_amts, rep(0, length(covt$time)))
-    regimen$type <- c(regimen$type, rep(0, length(covt$time)))
+    regimen$type <- c(regimen$type, rep("covariate", length(covt$time)))
     regimen$dose_cmt <- c(regimen$dose_cmt, rep(0, length(covt$time)))
     regimen$t_inf <- c(regimen$t_inf, rep(0, length(covt$time)))
 
@@ -113,26 +120,28 @@ create_event_table <- function(
   }
 
   # parse list to a design (data.frame)
-  type <- (regimen$type == "infusion") * 1
-  regimen$t_inf[type == 0] <- 0 # make sure inf_time is 0 for boluses
+  # For boluses, oral, sc, im, and covariates, set infusion time to 0. For all
+  # other methods, assume infusion time was provided correctly
+  is_bolus <- regimen$type %in% c("oral", "bolus", "sc", "im", "covariate")
+  regimen$t_inf[is_bolus] <- 0
   dos <- data.frame(cbind(t = regimen$dose_times,
                   dose = regimen$dose_amts,
-                  type = type,
+                  type = as.numeric(regimen$t_inf != 0),
                   dum = 0,
                   dose_cmt = regimen$dose_cmt,
                   t_inf = regimen$t_inf,
                   evid = regimen$evid,
                   bioav = bioav,
                   rate = 0))
-  if(sum(regimen$t_inf) > 0) {
+  if(sum(regimen$t_inf, na.rm = TRUE) > 0) {
     dos$rate[regimen$t_inf > 0] <- regimen$dose_amts[regimen$t_inf > 0] / regimen$t_inf[regimen$t_inf > 0]
   }
-  if(any(regimen$type == "infusion")) {
-    dos_t2 <- cbind(t = regimen$dose_times[regimen$type == "infusion"] + regimen$t_inf[regimen$type == "infusion"],
+  if(any(regimen$t_inf > 0)) {
+    dos_t2 <- cbind(t = regimen$dose_times[regimen$t_inf > 0] + regimen$t_inf[regimen$t_inf > 0],
                           dose = 0,
                           type = 1,
                           dum = 1,
-                          dose_cmt = regimen$dose_cmt[regimen$type == "infusion"],
+                          dose_cmt = regimen$dose_cmt[regimen$t_inf > 0],
                           t_inf = 0,
                           evid = 2,
                           bioav = 0, #bioav,
@@ -218,7 +227,7 @@ create_event_table <- function(
       }
     }
     # remove covariate points where there is also a dose
-    design <- design[!duplicated(paste0(design$t, "_", design$dose, "_", design$dum)),]
+    design <- design[!duplicated(paste(design$t, design$dose, design$dum, design$dose_cmt, sep = "_")),]
     # design <- design[!(design$t %in% covt$time & design$t %in% regimen$dose_times & design$dose == 0 & design$dum == 0) | design$t %in% t_obs,]
   }
   design <- design[design$t <= max(t_obs),]

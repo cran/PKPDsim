@@ -59,24 +59,25 @@ new_regimen <- function(
         reg$type <- "bolus"
       }
     }
-    if(!is.null(reg$type) && (any(is.null(reg$type)) || any(is.na(reg$type)) || any(length(reg$type) == 0) || !(all(reg$type %in% c("bolus", "oral", "infusion", "sc", "im"))))) {
-      if(!is.null(t_inf) || !is.null(rate)) {
-        reg$type <- "infusion" # assume all infusions
-      } else {
-        message("Type argument should be one of 'bolus', infusion', 'oral', 'sc' or 'im'. Assuming bolus for all doses.")
-        reg$type <- "bolus"
-      }
-    }
     if (is.null(times) && is.null(interval)) {
       stop("Dose times or dosing interval has to be specified.")
     }
     if (is.null(times) && !is.null(interval) && is.null(n)) {
       stop("The number of doses (n) must be specified in the regimen object.")
     }
-    if(any(type == "infusion") && (is.null(t_inf) || length(t_inf) == 0)) {
-      reg$t_inf = 1
-    } else if (any(is.na(t_inf))) {
-      t_inf[is.na(t_inf)] <- 1
+    if (any(reg$type == "covariate")) {
+      stop("'covariate' is a protected type and cannot be used for doses.")
+    }
+    if (is.null(t_inf) || length(t_inf) == 0) {
+      reg$t_inf <- rep(NA_real_, length(reg$type))
+    }
+    if (any(is.na(reg$t_inf))) {
+      # impute using standard values for each dose type
+      impute_t_inf <- c(infusion = 1, sc = 1/60, im = 1/60, oral = 0, bolus = 0)
+      idx <- which(is.na(reg$t_inf))
+      reg$t_inf[idx] <- impute_t_inf[reg$type[idx]]
+      # set unrecognized types to 1
+      reg$t_inf[is.na(reg$t_inf)] <- 1
     }
   }
   if(ss) {
@@ -126,7 +127,7 @@ new_regimen <- function(
   if(length(reg$type) != length(reg$dose_times)) {
     reg$type <- rep(reg$type[1], length(reg$dose_times))
   }
-  if(any(reg$type == "infusion")) {
+  if(any(reg$type %in% c("infusion", "sc", "im"))) {
     if(any(reg$t_inf == 0)) {
       reg$t_inf[reg$t_inf == 0] <- 1/60
       reg$rate[reg$t_inf == 0] <- 60

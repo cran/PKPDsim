@@ -74,7 +74,7 @@ test_that("Rounding-related index matching issues in time col", {
   expect_equal(sum(is.na(res2$cov_PMA)), 0)
 })
 
-test_that("Multiple obs_types does not add erroneuous infusion stop events", {
+test_that("Multiple obs_types does not add erroneous infusion stop events", {
   reg <- new_regimen(
     amt = c(100, 100, 100, 100),
     times = c(0, 336, 672, 1008),
@@ -91,4 +91,75 @@ test_that("Multiple obs_types does not add erroneuous infusion stop events", {
     model = NULL
   )
   expect_true(all(cumsum(res$rate) >= 0)) # cumulative dose rate should never be lower than zero
+  expect_true(sum(res$rate) == 0) # net dose should always be zero
+})
+
+test_that("simulatenous doses in different cmts do not remove infusion stops", {
+  reg <- new_regimen(
+    amt = c(100, 10, 100, 10, 100, 10),
+    times = c(0, 0, 12, 12, 24, 24),
+    t_inf = 0.5,
+    type = rep(c("drug_1", "drug_2"), 3)
+  )
+  model <- mod_2cmt_iv
+  attr(model, "cmt_mapping") <- list(drug_1 = 1, drug_2 = 2)
+  res <- create_event_table(
+    regimen = reg,
+    t_obs = 36,
+    covariates = list(WT = new_covariate(value = c(50, 55), times = c(0, 20))),
+    model = model
+  )
+  expect_true(all(cumsum(res$rate) >= 0)) # cumulative dose rate should never be lower than zero
+  expect_true(sum(res$rate) == 0) # net dose should always be zero
+  expect_true(all((reg$dose_amts/reg$t_inf) %in% res$rate)) # rates are right
+})
+
+test_that("useful cmt_mapping mismatch error is thrown", {
+  reg <- new_regimen(
+    amt = 100,
+    times = c(0, 12, 24),
+    t_inf = 0,
+    type = rep("oral", 3)
+  )
+  model <- mod_2cmt_iv
+  attr(model, "cmt_mapping") <- list(infusion = 1, bolus = 1) # not oral
+  expect_error(
+    create_event_table(
+      regimen = reg,
+      t_obs = 36,
+      covariates = list(WT = new_covariate(value = c(50, 55), times = c(0, 20))),
+      model = model
+    ),
+    "Unrecognized regimen type. Define 'oral' in model md field `cmt_mapping`",
+    fixed = TRUE
+  )
+})
+
+test_that("sc, im are considered to have t_inf = 0", {
+  reg1 <- new_regimen(
+    amt = c(100, 100),
+    times = c(0, 12),
+    type = rep("im", 2)
+  )
+  reg2 <- new_regimen(
+    amt = c(100, 100),
+    times = c(0, 12),
+    type = rep("sc", 2)
+  )
+
+  res1 <- create_event_table(
+    regimen = reg1,
+    t_obs = 24,
+    covariates = list(WT = new_covariate(value = 50))
+  )
+  res2 <- create_event_table(
+    regimen = reg2,
+    t_obs = 24,
+    covariates = list(WT = new_covariate(value = 50))
+  )
+
+  expect_true(all(res1$rate == 0))
+  expect_true(all(res2$rate == 0))
+  expect_true(all(res1$t_inf == 0))
+  expect_true(all(res2$t_inf == 0))
 })

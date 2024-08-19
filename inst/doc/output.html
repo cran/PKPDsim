@@ -49,7 +49,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -60,7 +60,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -355,10 +355,10 @@ factor specified in the model.</p>
 <p>The output for the observation, as well as the compartment from which
 the observation is taken can be set using the <code>obs</code>
 argument:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">new_ode_model</span>(<span class="at">code =</span> <span class="st">&quot;</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="st">  dAdt[1] = -KA * A[1];</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="st">  dAdt[2] = -(CL/V) * A[2] + KA*A[1];</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;</span>, <span class="at">obs =</span> <span class="fu">list</span>(<span class="at">cmt =</span> <span class="dv">2</span>, <span class="at">scale =</span> <span class="st">&quot;V&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">new_ode_model</span>(<span class="at">code =</span> <span class="st">&quot;</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="st">  dAdt[1] = -KA * A[1];</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="st">  dAdt[2] = -(CL/V) * A[2] + KA*A[1];</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="st">&quot;</span>, <span class="at">obs =</span> <span class="fu">list</span>(<span class="at">cmt =</span> <span class="dv">2</span>, <span class="at">scale =</span> <span class="st">&quot;V&quot;</span>))</span></code></pre></div>
 <div id="multiple-observation-types" class="section level2">
 <h2>Multiple observation types</h2>
 <p>If you would like to output more than one observation type, such as
@@ -366,24 +366,24 @@ the concentration of the parent drug and the concentration of the
 metabolite, you can control that using the <code>obs</code> argument.
 Below is an example where the amount in the absorption compartment as
 well as the systemic drug concentration are outputted.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">new_ode_model</span>(<span class="at">code =</span> <span class="st">&quot;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="st">    dAdt[1] = -KA * A[1];</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="st">    dAdt[2] = -(CL/V) * A[2] + KA*A[1];</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="st">  &quot;</span>, </span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs =</span> <span class="fu">list</span>(</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">cmt =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>),</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">scale =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="st">&quot;V&quot;</span>),</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">c</span>(<span class="st">&quot;abs&quot;</span>, <span class="st">&quot;conc&quot;</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>par <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">CL =</span> <span class="dv">5</span>, <span class="at">V =</span> <span class="dv">50</span>, <span class="at">KA =</span> .<span class="dv">5</span>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>reg <span class="ot">&lt;-</span> <span class="fu">new_regimen</span>(<span class="at">amt =</span> <span class="dv">100</span>, <span class="at">n =</span> <span class="dv">5</span>, <span class="at">interval =</span> <span class="dv">12</span>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">sim</span>(</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">ode =</span> mod, </span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> par, </span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">regimen =</span> reg, </span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">only_obs =</span> T</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">new_ode_model</span>(<span class="at">code =</span> <span class="st">&quot;</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="st">    dAdt[1] = -KA * A[1];</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="st">    dAdt[2] = -(CL/V) * A[2] + KA*A[1];</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="st">  &quot;</span>, </span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">obs =</span> <span class="fu">list</span>(</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    <span class="at">cmt =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    <span class="at">scale =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="st">&quot;V&quot;</span>),</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">c</span>(<span class="st">&quot;abs&quot;</span>, <span class="st">&quot;conc&quot;</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  )</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>)</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>par <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">CL =</span> <span class="dv">5</span>, <span class="at">V =</span> <span class="dv">50</span>, <span class="at">KA =</span> .<span class="dv">5</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>reg <span class="ot">&lt;-</span> <span class="fu">new_regimen</span>(<span class="at">amt =</span> <span class="dv">100</span>, <span class="at">n =</span> <span class="dv">5</span>, <span class="at">interval =</span> <span class="dv">12</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">sim</span>(</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  <span class="at">ode =</span> mod, </span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  <span class="at">parameters =</span> par, </span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>  <span class="at">regimen =</span> reg, </span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>  <span class="at">only_obs =</span> T</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="parameters-variables-and-covariates" class="section level2">
 <h2>Parameters, variables, and covariates</h2>
@@ -392,28 +392,28 @@ and/or covariates in the output table as well, especially if covariates
 and between-subject variability is included in the simulation, or for
 debugging models. You can use the <code>output_include</code> argument
 for this:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mod_1cmt_iv <span class="ot">&lt;-</span> <span class="fu">new_ode_model</span>(<span class="st">&quot;pk_1cmt_iv&quot;</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">CL =</span> <span class="dv">5</span>, <span class="at">V =</span> <span class="dv">50</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>reg <span class="ot">&lt;-</span> <span class="fu">new_regimen</span> (<span class="at">amt =</span> <span class="dv">100</span>, <span class="at">n =</span> <span class="dv">4</span>, <span class="at">interval =</span> <span class="dv">12</span>, <span class="at">type =</span> <span class="st">&quot;bolus&quot;</span>,  <span class="at">cmt=</span><span class="dv">1</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>cov_table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">id  =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>),</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">WT  =</span> <span class="fu">c</span>(<span class="dv">40</span>, <span class="dv">45</span>, <span class="dv">50</span>, <span class="dv">60</span>),</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">SCR =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">150</span>, <span class="dv">90</span>,<span class="dv">110</span>),</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">t   =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">sim</span>(</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">ode =</span> mod_1cmt_iv,</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> p,</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">regimen =</span> reg,</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">covariates_table =</span> cov_table,</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">covariates_implementation =</span> <span class="fu">list</span>(<span class="at">SCR =</span> <span class="st">&quot;interpolate&quot;</span>),</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">n_ind =</span> <span class="dv">3</span>,</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">only_obs =</span> T,</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_include =</span> <span class="fu">list</span>(<span class="at">parameters =</span> <span class="cn">TRUE</span>, <span class="at">covariates=</span><span class="cn">TRUE</span>)</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>mod_1cmt_iv <span class="ot">&lt;-</span> <span class="fu">new_ode_model</span>(<span class="st">&quot;pk_1cmt_iv&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">CL =</span> <span class="dv">5</span>, <span class="at">V =</span> <span class="dv">50</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>reg <span class="ot">&lt;-</span> <span class="fu">new_regimen</span> (<span class="at">amt =</span> <span class="dv">100</span>, <span class="at">n =</span> <span class="dv">4</span>, <span class="at">interval =</span> <span class="dv">12</span>, <span class="at">type =</span> <span class="st">&quot;bolus&quot;</span>,  <span class="at">cmt=</span><span class="dv">1</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>cov_table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">id  =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>),</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">WT  =</span> <span class="fu">c</span>(<span class="dv">40</span>, <span class="dv">45</span>, <span class="dv">50</span>, <span class="dv">60</span>),</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="at">SCR =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">150</span>, <span class="dv">90</span>,<span class="dv">110</span>),</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="at">t   =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>)</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">sim</span>(</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="at">ode =</span> mod_1cmt_iv,</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="at">parameters =</span> p,</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  <span class="at">regimen =</span> reg,</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  <span class="at">covariates_table =</span> cov_table,</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  <span class="at">covariates_implementation =</span> <span class="fu">list</span>(<span class="at">SCR =</span> <span class="st">&quot;interpolate&quot;</span>),</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  <span class="at">n_ind =</span> <span class="dv">3</span>,</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  <span class="at">only_obs =</span> T,</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>  <span class="at">output_include =</span> <span class="fu">list</span>(<span class="at">parameters =</span> <span class="cn">TRUE</span>, <span class="at">covariates=</span><span class="cn">TRUE</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>)</span></code></pre></div>
 <pre><code>## Simulating 3 individuals.</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dat)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">head</span>(dat)</span></code></pre></div>
 <pre><code>##     id t comp        y obs_type CL  V WT SCR
 ## 1    1 0  obs 2.000000        1  5 50 40  50
 ## 37   1 1  obs 1.809675        1  5 50 41  70

@@ -49,7 +49,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -60,7 +60,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -344,25 +344,25 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1>Covariates</h1>
 <p>Covariates are implemented using the <code>new_covariate()</code>
 function, wrapped in a named list. For example:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>covariates <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;WT&quot;</span> <span class="ot">=</span> <span class="fu">new_covariate</span>(<span class="at">value =</span> <span class="dv">70</span>),</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;SCR&quot;</span> <span class="ot">=</span> <span class="fu">new_covariate</span>(<span class="at">value =</span> <span class="dv">120</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>covariates <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="st">&quot;WT&quot;</span> <span class="ot">=</span> <span class="fu">new_covariate</span>(<span class="at">value =</span> <span class="dv">70</span>),</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="st">&quot;SCR&quot;</span> <span class="ot">=</span> <span class="fu">new_covariate</span>(<span class="at">value =</span> <span class="dv">120</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>)</span></code></pre></div>
 <p>The names in the covariate list-object should correspond
 <strong>exactly</strong> with the names of the covariates in the
 model.</p>
 <div id="time-varying-covariates" class="section level2">
 <h2>Time-varying covariates</h2>
-<p>Time-varing covariates, such as creatinine values can be implemented
+<p>Time-varying covariates, such as creatinine values can be implemented
 easily as well. They just require the additional <code>times</code>
 argument:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>covariates <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;WT&quot;</span> <span class="ot">=</span> <span class="fu">new_covariate</span>(<span class="at">value =</span> <span class="dv">70</span>),</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;CR&quot;</span> <span class="ot">=</span> <span class="fu">new_covariate</span>(</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">value =</span> <span class="fu">c</span>(<span class="fl">0.8</span>, <span class="dv">1</span>, <span class="fl">1.2</span>),</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">times =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">48</span>, <span class="dv">72</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>covariates <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="st">&quot;WT&quot;</span> <span class="ot">=</span> <span class="fu">new_covariate</span>(<span class="at">value =</span> <span class="dv">70</span>),</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="st">&quot;CR&quot;</span> <span class="ot">=</span> <span class="fu">new_covariate</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    <span class="at">value =</span> <span class="fu">c</span>(<span class="fl">0.8</span>, <span class="dv">1</span>, <span class="fl">1.2</span>),</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    <span class="at">times =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">48</span>, <span class="dv">72</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  )</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>)</span></code></pre></div>
 <p>By default, <code>PKPDsim</code> assumes that you want to interpolate
 (linearly) between measurements of the time-varying covariates. If you
 prefer to implement the covariate using
@@ -375,58 +375,58 @@ function), specify the <code>method = &quot;LOCF&quot;</code> argument to
 <p>A table of covariates can be supplied to <code>sim()</code> with
 covariate values per individual. It can handle both static and
 time-varying covariates. A covariate table could look like this:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>cov_table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">id  =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>),</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">WT  =</span> <span class="fu">c</span>(<span class="dv">40</span>, <span class="dv">45</span>, <span class="dv">50</span>, <span class="dv">60</span>),</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">SCR =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">150</span>, <span class="dv">90</span>, <span class="dv">110</span>),</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">t   =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>cov_table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">id  =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>),</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">WT  =</span> <span class="fu">c</span>(<span class="dv">40</span>, <span class="dv">45</span>, <span class="dv">50</span>, <span class="dv">60</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">SCR =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">150</span>, <span class="dv">90</span>, <span class="dv">110</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">t   =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>)</span></code></pre></div>
 <p>The <code>id</code> and <code>t</code> (time) columns can be omitted
 when only static covariates are to be used. Again, make sure that the
 headers used for the covariates match <em>exactly</em> with the
 covariate names specified in the model definition.</p>
 <p>A full example for a model with (simulated) covariates for a patient
 population:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">CL =</span> <span class="dv">1</span>,</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">V =</span> <span class="dv">10</span>,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">KA =</span> <span class="fl">0.5</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>n_ind <span class="ot">&lt;-</span> <span class="dv">50</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>cov_table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">&#39;id&#39;</span> <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span>n_ind,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">&#39;WT&#39;</span> <span class="ot">=</span> <span class="fu">rnorm</span>(n_ind, <span class="at">mean =</span> <span class="dv">70</span>, <span class="at">sd =</span> <span class="dv">5</span>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">new_ode_model</span>(</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">code =</span> <span class="st">&#39;</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="st">     CLi = CL * pow((WT/70), 0.75)</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="st">     Vi  = V * (WT/70)</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="st">     dAdt[1] = -KA*A[1]</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="st">     dAdt[2] =  KA*A[1] -(CLi/Vi)*A[2]</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="st">   &#39;</span>,</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>   <span class="at">declare_variables =</span> <span class="fu">c</span>(<span class="st">&#39;CLi&#39;</span>, <span class="st">&#39;Vi&#39;</span>),</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>   <span class="at">covariates =</span> <span class="fu">c</span>(<span class="st">&#39;WT&#39;</span>),</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>   <span class="at">dose =</span> <span class="fu">list</span>(<span class="at">cmt =</span> <span class="dv">1</span>),</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>   <span class="at">obs =</span> <span class="fu">list</span>(<span class="at">cmt =</span> <span class="dv">2</span>, <span class="at">scale =</span> <span class="st">&#39;V * (WT/70)&#39;</span>)</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>regimen <span class="ot">&lt;-</span> <span class="fu">new_regimen</span>(</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">amt  =</span> <span class="dv">30</span>,</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">4</span>,</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">&#39;bolus&#39;</span>,</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">interval =</span> <span class="dv">12</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">sim</span>(</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">ode =</span> model,</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> parameters,</span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">t_obs =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">12</span>, <span class="dv">16</span>, <span class="dv">24</span>),</span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">n_ind =</span> n_ind,</span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">regimen =</span> regimen,</span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">covariates_table =</span> cov_table,</span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_include =</span> <span class="fu">list</span>(<span class="at">covariates =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">CL =</span> <span class="dv">1</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">V =</span> <span class="dv">10</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">KA =</span> <span class="fl">0.5</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>n_ind <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>cov_table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="st">&#39;id&#39;</span> <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span>n_ind,</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="st">&#39;WT&#39;</span> <span class="ot">=</span> <span class="fu">rnorm</span>(n_ind, <span class="at">mean =</span> <span class="dv">70</span>, <span class="at">sd =</span> <span class="dv">5</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>)</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">new_ode_model</span>(</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  <span class="at">code =</span> <span class="st">&#39;</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="st">     CLi = CL * pow((WT/70), 0.75)</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="st">     Vi  = V * (WT/70)</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="st">     dAdt[1] = -KA*A[1]</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="st">     dAdt[2] =  KA*A[1] -(CLi/Vi)*A[2]</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="st">   &#39;</span>,</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>   <span class="at">declare_variables =</span> <span class="fu">c</span>(<span class="st">&#39;CLi&#39;</span>, <span class="st">&#39;Vi&#39;</span>),</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>   <span class="at">covariates =</span> <span class="fu">c</span>(<span class="st">&#39;WT&#39;</span>),</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>   <span class="at">dose =</span> <span class="fu">list</span>(<span class="at">cmt =</span> <span class="dv">1</span>),</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>   <span class="at">obs =</span> <span class="fu">list</span>(<span class="at">cmt =</span> <span class="dv">2</span>, <span class="at">scale =</span> <span class="st">&#39;V * (WT/70)&#39;</span>)</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>)</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>regimen <span class="ot">&lt;-</span> <span class="fu">new_regimen</span>(</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>  <span class="at">amt  =</span> <span class="dv">30</span>,</span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">4</span>,</span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">&#39;bolus&#39;</span>,</span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>  <span class="at">interval =</span> <span class="dv">12</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>)</span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">sim</span>(</span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a>  <span class="at">ode =</span> model,</span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a>  <span class="at">parameters =</span> parameters,</span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a>  <span class="at">t_obs =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">12</span>, <span class="dv">16</span>, <span class="dv">24</span>),</span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a>  <span class="at">n_ind =</span> n_ind,</span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a>  <span class="at">regimen =</span> regimen,</span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a>  <span class="at">covariates_table =</span> cov_table,</span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a>  <span class="at">output_include =</span> <span class="fu">list</span>(<span class="at">covariates =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a>)</span></code></pre></div>
 <pre><code>## Simulating 50 individuals.</code></pre>
 <p><em>Note: PKPDsim does not handle missing covariate values. If you do
 have missing covariate data, probably the best approach would be to

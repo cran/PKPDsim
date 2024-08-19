@@ -4,18 +4,27 @@
 \alias{regimen_to_nm}
 \title{Convert PKPDsim regimen to NONMEM table (doses only)}
 \usage{
-regimen_to_nm(reg = NULL, dose_cmt = 1, n_ind = 1, t_obs = NULL, obs_cmt = 1)
+regimen_to_nm(
+  reg = NULL,
+  dose_cmt = 1,
+  n_ind = 1,
+  t_obs = NULL,
+  obs_cmt = 1,
+  bioav = NULL
+)
 }
 \arguments{
-\item{reg}{`PKPDsim` regimen, created using `new_regimen()` function}
+\item{reg}{\code{PKPDsim} regimen, created using \code{new_regimen()} function}
 
-\item{dose_cmt}{dosing compartment, if not specified in `reg` object}
+\item{dose_cmt}{dosing compartment, if not specified in \code{reg} object}
 
-\item{n_ind}{repeat for `n_ind` subjects}
+\item{n_ind}{repeat for \code{n_ind} subjects}
 
 \item{t_obs}{add observation time(s)}
 
 \item{obs_cmt}{observation compartment for added observation time(s)}
+
+\item{bioav}{bioavailability (numeric vector, can not be a parameter)}
 }
 \value{
 Data frame containing doses
