@@ -348,11 +348,11 @@ string referring to a parameter (e.g. “ALAG”). If a single number or
 parameter is specified, the lag time will apply to the default dose
 compartment only. Alternatively, it is also possible to specify a vector
 of lag times, with a value for each compartment.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;PKPDsim&quot;</span>)</span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(PKPDsim)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>pk <span class="ot">&lt;-</span> <span class="fu">new_ode_model</span>(</span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="at">code =</span> <span class="st">&quot; dAdt[1] = -KA * A[1]; dAdt[2] = KA*A[1] -(CL/V) * A[2] &quot;</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="at">obs =</span> <span class="fu">list</span>(<span class="at">cmt =</span> <span class="dv">2</span>, <span class="at">scale=</span><span class="st">&quot;V&quot;</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="at">obs =</span> <span class="fu">list</span>(<span class="at">cmt =</span> <span class="dv">2</span>, <span class="at">scale =</span> <span class="st">&quot;V&quot;</span>),</span>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="at">dose =</span> <span class="fu">list</span>(<span class="at">cmt =</span> <span class="dv">1</span>),</span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="at">lagtime =</span> <span class="st">&quot;ALAG&quot;</span></span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>)</span>
@@ -413,7 +413,7 @@ will be added soon to PKPDsim.</em></p>
 <span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>  <span class="at">parameters =</span> parameters,</span>
 <span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">5</span>,</span>
 <span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>  <span class="at">omega =</span> <span class="fu">cv_to_omega</span>(</span>
-<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>    <span class="fu">list</span>(<span class="at">CL =</span> <span class="fl">0.1</span>, <span class="at">V =</span> <span class="fl">0.1</span>, <span class="at">MTT =</span> <span class="fl">0.2</span>, <span class="at">N =</span><span class="fl">0.1</span>, <span class="at">KA=</span><span class="fl">0.1</span>),</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>    <span class="fu">list</span>(<span class="at">CL =</span> <span class="fl">0.1</span>, <span class="at">V =</span> <span class="fl">0.1</span>, <span class="at">MTT =</span> <span class="fl">0.2</span>, <span class="at">N =</span> <span class="fl">0.1</span>, <span class="at">KA =</span> <span class="fl">0.1</span>),</span>
 <span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>    parameters</span>
 <span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>  ),</span>
 <span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>  <span class="at">t_obs =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">36</span>, .<span class="dv">5</span>)</span>

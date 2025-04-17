@@ -391,14 +391,15 @@ is in, you have to define this yourself in conjunction with the model
 code and observation scale.</em></p>
 <div id="steady-state" class="section level1">
 <h1>Steady state</h1>
-<p>Instead of simulating the full concentration time course for a give
+<p>Instead of simulating the full concentration time course for a given
 model, if you want to simulate the PK(PD) at steady state, you can also
-specify the <code>ss=TRUE</code> argument to <code>new_regimen()</code>,
-which will then simulate the regimen at steady state. By default, steady
-state is assumed to occur after 5 days (PKPDsim doesn’t check if steady
-state is reached!), but if you want to decrease or increase this you can
-do so by specifying the <code>n_ss</code> argument which takes the
-number of doses to simulate before assuming steady state.</p>
+specify the <code>ss = TRUE</code> argument to
+<code>new_regimen()</code>, which will then simulate the regimen at
+steady state. By default, steady state is assumed to occur after 5 days
+(PKPDsim doesn’t check if steady state is reached!), but if you want to
+decrease or increase this you can do so by specifying the
+<code>n_ss</code> argument, which takes the number of doses to simulate
+before assuming steady state.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>reg_ss <span class="ot">&lt;-</span> <span class="fu">new_regimen</span>(</span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="at">amt =</span> <span class="dv">100</span>,</span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">interval =</span> <span class="dv">12</span>,</span>

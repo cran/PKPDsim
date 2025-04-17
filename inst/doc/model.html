@@ -384,7 +384,7 @@ see the currently available models:</p>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="st">  dAdt[1] = -KA * A[1]</span></span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="st">  dAdt[2] = +KA * A[1] -(CL/V) * A[2]</span></span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="st">&quot;</span>)</span></code></pre></div>
-<p>The input code should adhere to the follow rules:</p>
+<p>The input code should adhere to the following rules:</p>
 <ul>
 <li>the derivatives in the ODE system are defined using
 <code>dAdt</code>omputate</li>
@@ -518,9 +518,9 @@ follows:</em></p>
 </div>
 <div id="custom-model-from-file" class="section level1">
 <h1>Custom model from file</h1>
-<p>Using the <code>file=</code> argument, the model code is read from
-the specified files. This is just a convenience function, i.e. it allows
-you to separate models from R code more easily.</p>
+<p>Using the <code>file</code> argument, the model code is read from the
+specified files. This is just a convenience function, i.e. it allows you
+to separate models from R code more easily.</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>pk1 <span class="ot">&lt;-</span> <span class="fu">new_ode_model</span>(</span>
 <span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">&quot;pk_1cmt_oral_nonlin_v1.txt&quot;</span>,</span>
 <span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>  <span class="at">declare_variables =</span> <span class="fu">c</span>(<span class="st">&quot;KEL&quot;</span>, <span class="st">&quot;CLi&quot;</span>)</span>

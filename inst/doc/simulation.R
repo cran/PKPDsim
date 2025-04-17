@@ -2,11 +2,11 @@
 library("PKPDsim")
 
 ## ----sim, eval=FALSE----------------------------------------------------------
-#  dat <- sim(
-#    ode = model,              # created using new_ode_model()
-#    parameters = parameters,  # a named list of parameter values
-#    regimen = regimen         # created using new_regimen
-#  )
+# dat <- sim(
+#   ode = model,              # created using new_ode_model()
+#   parameters = parameters,  # a named list of parameter values
+#   regimen = regimen         # created using new_regimen
+# )
 
 ## ----sim-real-example---------------------------------------------------------
 model <- new_ode_model("pk_1cmt_iv")

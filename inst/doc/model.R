@@ -1,14 +1,16 @@
 ## ----cran, eval=FALSE---------------------------------------------------------
-#  install.packages("PKPDsim")
+# install.packages("PKPDsim")
 
 ## ----load-lib, echo=FALSE-----------------------------------------------------
-library("PKPDsim")
+library(PKPDsim)
 
 ## ----new-model----------------------------------------------------------------
 pk1 <- new_ode_model(model = "pk_1cmt_oral")
 
 ## ----available-models, error=TRUE---------------------------------------------
+try({
 new_ode_model()
+})
 
 ## ----custom-model-------------------------------------------------------------
 pk1 <- new_ode_model(code = "
@@ -87,8 +89,8 @@ pk1 <- new_ode_model(code = "
 )
 
 ## ----model-from-file, eval=FALSE----------------------------------------------
-#  pk1 <- new_ode_model(
-#    file = "pk_1cmt_oral_nonlin_v1.txt",
-#    declare_variables = c("KEL", "CLi")
-#  )
+# pk1 <- new_ode_model(
+#   file = "pk_1cmt_oral_nonlin_v1.txt",
+#   declare_variables = c("KEL", "CLi")
+# )
 
